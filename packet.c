@@ -87,12 +87,11 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
         case IPPROTO_TCP:
             printf("   Protocol: TCP\n");
             struct tcpheader *tcp = (struct tcpheader *)
-                                    (packet + sizeof(struct ethheader) + sizeof(struct ipheader));
+                                    (packet + sizeof(struct ethheader) + ip->iph_ihl*4);
             printf("[SourcePort]: %d\n", ntohs(tcp->tcp_sport));
             printf("[DestinationPort]: %d\n", ntohs(tcp->tcp_dport));
 
-            char *msg = (char *)(packet + sizeof(struct ethheader) + sizeof(struct ipheader)
-                                + sizeof(struct tcpheader));
+            char *msg = (char *)(packet + sizeof(struct ethheader) + ip->iph_ihl*4 + TH_OFF(tcp)*4);
             printf("[Message]\n");
             printf("%s\n", msg);
             return;
