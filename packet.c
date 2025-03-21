@@ -53,39 +53,38 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
                               const u_char *packet)
 {
   struct ethheader *eth = (struct ethheader *)packet;
-  printf("[SourceMAC]: ");
-  for(int i=0;i<6;i++){
-    printf("%02x", eth->ether_shost[i]);
-    if(i==5){
-      printf("\n");
-    }
-    else{
-      printf(":");
-    }
-  }
-
-  printf("[DestinationMAC]: ");
-  for(int i=0;i<6;i++){
-    printf("%02x", eth->ether_dhost[i]);
-    if(i==5){
-      printf("\n");
-    }
-    else{
-      printf(":");
-    }
-  }
-
   if (ntohs(eth->ether_type) == 0x0800) { // 0x0800 is IP type
     struct ipheader * ip = (struct ipheader *)
-                           (packet + sizeof(struct ethheader)); 
-
-    printf("[SourceIP]: %s\n", inet_ntoa(ip->iph_sourceip));   
-    printf("[DestiantionIP]: %s\n", inet_ntoa(ip->iph_destip));    
-
+                           (packet + sizeof(struct ethheader));    
     /* determine protocol */
     switch(ip->iph_protocol) {                                 
         case IPPROTO_TCP:
-            printf("   Protocol: TCP\n");
+            printf("Protocol: TCP\n");
+            printf("[SourceMAC]: ");
+            for(int i=0;i<6;i++){
+              printf("%02x", eth->ether_shost[i]);
+              if(i==5){
+                printf("\n");
+              }
+              else{
+                printf(":");
+              }
+            }
+          
+            printf("[DestinationMAC]: ");
+            for(int i=0;i<6;i++){
+              printf("%02x", eth->ether_dhost[i]);
+              if(i==5){
+                printf("\n");
+              }
+              else{
+                printf(":");
+              }
+            }
+
+            printf("[SourceIP]: %s\n", inet_ntoa(ip->iph_sourceip));   
+            printf("[DestiantionIP]: %s\n", inet_ntoa(ip->iph_destip)); 
+
             struct tcpheader *tcp = (struct tcpheader *)
                                     (packet + sizeof(struct ethheader) + ip->iph_ihl*4);
             printf("[SourcePort]: %d\n", ntohs(tcp->tcp_sport));
@@ -96,7 +95,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
             printf("%s\n", msg);
             return;
         default:
-            printf("   Protocol: Not TCP\n");
+            printf("Protocol: Not TCP\n");
             return;
     }
   }
