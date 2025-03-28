@@ -53,7 +53,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
                               const u_char *packet)
 {
   struct ethheader *eth = (struct ethheader *)packet;
-  // if (ntohs(eth->ether_type) == 0x0800) { // 0x0800 is IP type
     struct ipheader * ip = (struct ipheader *)
                            (packet + sizeof(struct ethheader));    
     /* determine protocol */
@@ -98,7 +97,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
             printf("Protocol: Not TCP\n");
             return;
     }
-  // }
 }
 
 int main()
